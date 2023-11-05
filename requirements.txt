@@ -1,0 +1,17 @@
+asgiref==3.7.2
+Django==3.2
+django-ckeditor==6.7.0
+django-cleanup==8.0.0
+django-cors-headers==4.2.0
+django-filter==23.2
+django-js-asset==2.1.0
+django-mptt==0.14.0
+django-phonenumber-field==7.1.0
+django-richtextfield==1.6.1
+djangorestframework==3.14.0
+djangorestframework-simplejwt==4.0.0
+phonenumbers==8.13.19
+Pillow==10.0.0
+PyJWT==1.7.1
+pytz==2023.3
+sqlparse==0.4.4
