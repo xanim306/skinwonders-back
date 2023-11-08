@@ -239,3 +239,21 @@ class OrderItem(DateMixin):
 
 
 
+class ProductComment(MPTTModel):
+    user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,null=True)
+    parent = TreeForeignKey('self',on_delete = models.CASCADE, blank= True, null = True, related_name = 'children')
+    name = models.CharField(max_length=300)
+    email = models.EmailField()
+    comment = models.TextField()
+    session_key = models.CharField(max_length=40,null=True)
+
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+
+    def __str__(self):
+        return self.name
+    
+

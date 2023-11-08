@@ -10,6 +10,9 @@ urlpatterns = [
     path('list/',views.ProductListView.as_view(),name='list'),
     path('news/',views.NewsletterView.as_view(),name='news'),
     path("detail/<int:id>/", views.ProductDetailView.as_view(), name="detail"),
+                                            ###Comment###
+    path("detail/comment/<int:id>/",views.CommentView.as_view(), name="comment"),
+    path("detail/comment/update/<int:id>/",views.CommentUpdateView.as_view(), name="comment-update"),
                                         ####wishlist#####
     path('wishlist/add/remove/<int:id>/', views.WishlistAddItemView.as_view(), name='wishlist-add-remove'),
     path('wishlist/list/', views.WishlistListItemView.as_view(), name='wishlist-list'),      

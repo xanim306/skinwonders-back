@@ -1,8 +1,8 @@
-from ..models import Category,Product,Basket,OrderItem,Order,ShippingInfo,BillingInfo
+from ..models import Category,Product,Basket,OrderItem,Order,ProductComment
 from django.shortcuts import get_object_or_404,redirect
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import CategorySerializer,ProductSerializer,WishlistSerializer,ProductListSerializer,NewsletterSubscribeSerializer,BasketSerializer,RemoveCartItemSerializer,BillingInfoSerializer,ShippingInfoSerializer,PaymentInfoSerializer,BasketItemSerializer,PlaceOrderSerializer,OrderListSerializer
+from .serializers import CategorySerializer,ProductSerializer,WishlistSerializer,ProductListSerializer,NewsletterSubscribeSerializer,BasketSerializer,RemoveCartItemSerializer,BillingInfoSerializer,ShippingInfoSerializer,PaymentInfoSerializer,BasketItemSerializer,PlaceOrderSerializer,OrderListSerializer,CommentSerializer,CommentUpdateSerializer
 from .paginations import CustomPagination
 from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
 from .permissions import CustomPermission
@@ -751,3 +751,52 @@ class WishlistListRemoveItemView(generics.CreateAPIView):
         serializer = self.get_serializer(wishlist_item)
         return Response(serializer.data, status=201)
 
+
+
+class CommentView(generics.CreateAPIView):
+    queryset = ProductComment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes=(IsAuthenticated,)
+
+
+    def post(self, request, id, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = get_object_or_404(Product, id=id)
+
+        user = self.request.user
+        email = self.request.user.email
+        session_key=None
+
+        # Pass the product to the serializer's create method
+        comment = serializer.save(product=product,user=user,session_key=session_key,email=email)
+
+        return Response(CommentSerializer(comment).data, status=200)
+
+
+
+
+class CommentUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProductComment.objects.all()
+    serializer_class = CommentUpdateSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_field = "id"
+
+    def get_queryset(self):
+        user = self.request.user
+        return ProductComment.objects.filter(user=user)
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        comment_id = kwargs.get('id')
+
+        try:
+            instance = ProductComment.objects.get(user=user, id=comment_id)  
+        except ProductComment.DoesNotExist:
+            return Response({'message': 'You cannot edit someone else comment'}, status=404)
+
+        instance.comment = request.data.get('comment')
+        instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=200)

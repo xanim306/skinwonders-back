@@ -197,3 +197,88 @@ class ResetActivationSerializer(serializers.ModelSerializer):
     res_code=serializers.CharField()
 
 
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source="user.name")
+    user_surname = serializers.CharField(source="user.surname")
+    user_age = serializers.IntegerField(source="user.age")
+    user_country = serializers.CharField(source="user.country")
+    user_image = serializers.ImageField(source="user.image")
+    user_id = serializers.SlugField(source="user.id")
+
+    class Meta:
+        model = Profile
+        fields = ("user_name","user_surname","user_age","user_country","user_image","user_id")
+
+
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+
+    user_name = serializers.CharField(source="user.name", required=False)
+    user_surname = serializers.CharField(source="user.surname", required=False)
+    user_age = serializers.IntegerField(source="user.age", required=False)
+    user_country = serializers.CharField(source="user.country", required=False)
+    user_image = serializers.ImageField(source="user.image",required=False)
+
+    class Meta:
+        model = Profile
+        fields = ("user_name","user_surname","user_age","user_country","user_image")
+
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop("user", {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+
+
+class PasswordChangeSerializer(serializers.ModelSerializer):
+    # current_password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
+    password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})    
+    password_confirm = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})    
+    class Meta:
+        model = User
+        fields = ("password","password_confirm")
+
+    def validate(self, attrs):
+        # current_password = attrs.get("current_password")
+        password = attrs.get("password").strip()
+        password_confirm = attrs.get("password_confirm").strip()
+
+        
+        if len(password)<6:
+            raise serializers.ValidationError({"error":"length must be bigger than 6"})
+        
+        if not any(i.isdigit()for i in password):
+            raise serializers.ValidationError({"error":"At least a character has to be involved"})
+
+        # if not User.objects.filter(password = current_password).exists:
+        #     raise serializers.ValidationError({"current password is wrong"})
+        if password != password_confirm:
+            raise serializers.ValidationError({"error": "Passwords don't match"})
+        
+        return attrs
+    
+
+    def create(self, validated_data):
+        password_confirm =validated_data.pop("password_confirm")
+        password = validated_data.get("password")
+
+        user = User.objects.create(
+            **validated_data,
+        )
+        user.set_password(password)
+        user.save()
+
+        return user
+    
+
+

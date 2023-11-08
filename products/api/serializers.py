@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from ..models import Category,Product,ProductImage,SkinType,Newsletter,Basket,Order,OrderItem,ShippingInfo,BillingInfo,PaymentInfo,Wishlist
+from ..models import Category,Product,ProductImage,SkinType,Newsletter,Basket,Order,OrderItem,ShippingInfo,BillingInfo,PaymentInfo,Wishlist,ProductComment
 from django.contrib.auth import get_user_model
 from django.db.models import F, FloatField,Value
 from django.db.models.functions import Coalesce
@@ -306,3 +306,57 @@ class OrderListSerializer(serializers.ModelSerializer):
     def get_total_price(self, obj):
         total_price = sum([item.product.price * item.quantity for item in obj.items.all()])
         return total_price
+    
+
+
+
+    
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductComment
+        fields = "__all__"
+        extra_kwargs = {
+            "user": {"read_only": True},
+            "product": {"read_only": True},
+            "session_key": {"read_only": True},
+            "email":{"read_only":True},
+        }
+    
+    def to_representation(self, instance):
+        repr_ = super().to_representation(instance)
+
+        children = CommentSerializer(
+            ProductComment.objects.filter(parent=instance),
+            many=True
+        ).data
+
+        if children:
+            repr_['children'] = children
+
+        return repr_
+
+
+
+class CommentUpdateSerializer(serializers.ModelSerializer):
+    # comment = serializers.CharField(required=False)
+
+    class Meta:
+        model = ProductComment
+        fields = ("comment","user")
+        extra_kwargs={"user":{"read_only":True},}
+
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        comment=attrs.get("comment")
+
+        check_comment = ProductComment.objects.filter(email=email,comment=comment)
+
+        if not check_comment:
+            raise serializers.ValidationError({"error":"This is not your comment"})
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)

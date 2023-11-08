@@ -2,7 +2,7 @@ from rest_framework import generics
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 # Create your views here.
-from .serializers import LoginSerializer,RegisterSerializer,ActivationSerializer,ResetPasswordSerializer,ResetPasswordCompleteSerializer
+from .serializers import LoginSerializer,RegisterSerializer,ActivationSerializer,ResetPasswordSerializer,ResetPasswordCompleteSerializer,ProfileSerializer,ProfileUpdateSerializer,PasswordChangeSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.core.mail import send_mail
@@ -10,12 +10,14 @@ from django.conf import settings
 from rest_framework import status
 from django.urls import reverse_lazy
 
-####
+from rest_framework.permissions import IsAuthenticated
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import smart_str,smart_bytes
 
+from accounts.models import Profile
 
 User = get_user_model()
+
 
 
 
@@ -100,6 +102,62 @@ class ResetPasswordCompleteView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ResetPasswordCompleteSerializer
     lookup_field = "slug"
+
+    def put(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user.set_password(serializer.validated_data.get('password'))
+        user.save()
+
+        refresh_token = request.data.get("refresh")
+        token = RefreshToken(refresh_token)
+
+        token_data = {"email": user.email}
+
+        token = RefreshToken.for_user(user)
+        token_data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+
+        return Response({**token_data})
+    
+
+
+
+
+
+
+class ProfileView(generics.ListAPIView):
+    queryset= Profile.objects.all()
+    serializer_class=ProfileSerializer
+    permission_classes=(IsAuthenticated,)
+
+
+
+
+class ProfileUpdateView(generics.RetrieveUpdateAPIView):
+    queryset=Profile.objects.all()
+    serializer_class=ProfileUpdateSerializer
+    permission_classes=(IsAuthenticated,)
+
+    def get_object(self):
+        return  self.request.user.profile    
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+class PasswordChangeView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = PasswordChangeSerializer
+    permission_classes=(IsAuthenticated,)
+
+    def get_object(self):
+        return  self.request.user   
+
+    def perform_update(self, serializer):
+        serializer.save()
+
 
     def put(self, request, *args, **kwargs):
         user = self.get_object()
