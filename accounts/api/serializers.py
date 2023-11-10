@@ -75,7 +75,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = attrs.get("password").strip()
         password_confirm = attrs.get("password_confirm").strip()
 
-     
+        if len(password)<6:
+            raise serializers.ValidationError({"error":"length must be bigger than 6"})
+        
+        if not any(i.isdigit()for i in password):
+            raise serializers.ValidationError({"error":"At least a character has to be involved"})
+
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"error": "This email already exists"})
+
+        if email != email_confirm:
+            raise serializers.ValidationError({"error": "Emails don't match"})
+
+        if password != password_confirm:
+            raise serializers.ValidationError({"error": "Passwords don't match"})
         
         return attrs
 
@@ -241,18 +254,20 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
 
 class PasswordChangeSerializer(serializers.ModelSerializer):
-    # current_password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
+    current_password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
     password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})    
     password_confirm = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})    
     class Meta:
         model = User
-        fields = ("password","password_confirm")
+        fields = ("password","password_confirm","current_password")
 
     def validate(self, attrs):
-        # current_password = attrs.get("current_password")
+        current_password = attrs.get("current_password").strip()
         password = attrs.get("password").strip()
         password_confirm = attrs.get("password_confirm").strip()
+        email = self.context.get("email")
 
+        user = authenticate(email=email,password=current_password)
         
         if len(password)<6:
             raise serializers.ValidationError({"error":"length must be bigger than 6"})
@@ -260,16 +275,21 @@ class PasswordChangeSerializer(serializers.ModelSerializer):
         if not any(i.isdigit()for i in password):
             raise serializers.ValidationError({"error":"At least a character has to be involved"})
 
-        # if not User.objects.filter(password = current_password).exists:
-        #     raise serializers.ValidationError({"current password is wrong"})
+        if password==current_password:
+            raise serializers.ValidationError({"error":"current and new password can't be same"})
+
         if password != password_confirm:
             raise serializers.ValidationError({"error": "Passwords don't match"})
+        
+        if not user:
+            raise serializers.ValidationError({"error":"Old password is wrong"})
         
         return attrs
     
 
     def create(self, validated_data):
         password_confirm =validated_data.pop("password_confirm")
+        current_password = validated_data.pop("current_password")
         password = validated_data.get("password")
 
         user = User.objects.create(

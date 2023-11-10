@@ -20,7 +20,6 @@ User = get_user_model()
 
 
 
-
 class LoginView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = LoginSerializer
@@ -124,10 +123,6 @@ class ResetPasswordCompleteView(generics.UpdateAPIView):
     
 
 
-
-
-
-
 class ProfileView(generics.ListAPIView):
     queryset= Profile.objects.all()
     serializer_class=ProfileSerializer
@@ -162,7 +157,7 @@ class PasswordChangeView(generics.UpdateAPIView):
     def put(self, request, *args, **kwargs):
         user = self.get_object()
 
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data,context={"email":self.request.user.email})
         serializer.is_valid(raise_exception=True)
 
         user.set_password(serializer.validated_data.get('password'))
