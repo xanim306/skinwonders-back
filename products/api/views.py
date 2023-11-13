@@ -2,7 +2,7 @@ from ..models import Category,Product,Basket,OrderItem,Order,ProductComment
 from django.shortcuts import get_object_or_404,redirect
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import CategorySerializer,ProductSerializer,WishlistSerializer,ProductListSerializer,NewsletterSubscribeSerializer,BasketSerializer,RemoveCartItemSerializer,BillingInfoSerializer,ShippingInfoSerializer,PaymentInfoSerializer,BasketItemSerializer,PlaceOrderSerializer,OrderListSerializer,CommentSerializer,CommentUpdateSerializer
+from .serializers import CategorySerializer,ProductSerializer,WishlistSerializer,ProductListSerializer,NewsletterSubscribeSerializer,BasketSerializer,RemoveCartItemSerializer,BillingInfoSerializer,ShippingInfoSerializer,PaymentInfoSerializer,BasketItemSerializer,PlaceOrderSerializer,OrderListSerializer,CommentSerializer,CommentUpdateSerializer,ProductListFilterSerializer
 from .paginations import CustomPagination
 from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
 from .permissions import CustomPermission
@@ -47,6 +47,94 @@ class ProductListView(generics.ListAPIView):
     #     serializer.is_valid(raise_exception=True)
     #     serializer.save()
     #     return Response({'message': 'Subscription successful.'}, status=201)
+
+
+class StatusFilterView(generics.ListAPIView):
+    serializer_class = ProductListFilterSerializer
+    # filter_backends = (DjangoFilterBackend,)
+    # filterset_class = ProductFilter
+
+    def get_queryset(self):
+    
+        queryset = Product.objects.annotate(
+            discount_price=Coalesce('discount', 0, output_field=FloatField()),
+            total_price=F("price") - F("discount_price"),
+            discount_percent=F("discount_price") * 100 / F("price")
+        ).order_by('-created_at')
+
+        status = self.kwargs['status']
+        
+        return queryset.filter(status=status)
+
+
+
+
+class SkinTypeFilterView(generics.ListAPIView):
+    serializer_class = ProductListFilterSerializer
+    # filter_backends = (DjangoFilterBackend,)
+    filterset_class = ProductFilter
+
+    def get_queryset(self):
+
+        queryset = Product.objects.annotate(
+            discount_price=Coalesce('discount', 0, output_field=FloatField()),
+            total_price=F("price") - F("discount_price"),
+            discount_percent=F("discount_price") * 100 / F("price")
+        ).order_by('-created_at')
+
+        skintype = self.kwargs['skintype']
+
+        return queryset.filter(skintype=skintype)
+
+
+class ProductNameFilterView(generics.ListAPIView):
+    serializer_class = ProductListSerializer
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    ordering_fields = ('created_at', 'name', 'total_price')
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+
+        queryset = Product.objects.annotate(
+            discount_price=Coalesce('discount', 0, output_field=FloatField()),
+            total_price=F("price") - F("discount_price"),
+            discount_percent=F("discount_price") * 100 / F("price")
+        ).order_by('-created_at')
+
+        # Apply name filter
+        name_filter = self.kwargs.get('name', None)
+        if name_filter:
+            queryset = queryset.filter(name__icontains=name_filter)
+
+        return queryset
+    
+
+
+class ProductPriceFilterView(generics.ListAPIView):
+    serializer_class = ProductListSerializer
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    ordering_fields = ('created_at', 'name', 'total_price')
+    # filterset_class = ProductFilter
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+
+        queryset = Product.objects.annotate(
+            discount_price=Coalesce('discount', 0, output_field=FloatField()),
+            total_price=F("price") - F("discount_price"),
+            discount_percent=F("discount_price") * 100 / F("price")
+        ).order_by('-created_at')
+
+        # Apply price filter
+        max_price = self.kwargs.get('max_price', None)
+        min_price = self.kwargs.get('min_price', None)
+
+        if min_price:
+            queryset=queryset.filter(price__gte=min_price)
+        if max_price:
+            queryset=queryset.filter(price__lte=max_price)
+
+        return queryset
 
 
 

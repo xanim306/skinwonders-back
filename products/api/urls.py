@@ -10,6 +10,11 @@ urlpatterns = [
     path('list/',views.ProductListView.as_view(),name='list'),
     path('news/',views.NewsletterView.as_view(),name='news'),
     path("detail/<int:id>/", views.ProductDetailView.as_view(), name="detail"),
+                                            ###Filter###
+    path('list/status/<str:status>/', views.StatusFilterView.as_view(), name='status-filter'),
+    path('list/skintype/<int:skintype>/', views.SkinTypeFilterView.as_view(), name='skintype-filter'),
+    path('list/name/<str:name>/', views.ProductNameFilterView.as_view(), name='product-list-name-filter'),
+    path('list/price/<int:min_price>/<int:max_price>/', views.ProductPriceFilterView.as_view(), name='product-price-filter'),
                                             ###Comment###
     path("detail/comment/<int:id>/",views.CommentView.as_view(), name="comment"),
     path("detail/comment/update/<int:id>/",views.CommentUpdateView.as_view(), name="comment-update"),

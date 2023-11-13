@@ -53,19 +53,45 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("name","price","total_price","discount_percent","category","status","id")
+        fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id")
 
     def to_representation(self, instance):
-        repr_= super().to_representation(instance)
-        repr_['category']=CategorySerializer(instance.category).data
-        repr_['images']=ImageSerializer(instance.productimage_set.first()).data                
-        if instance.discount_percent == 0:
-            repr_.pop("discount_percent")
+        repr_ = super().to_representation(instance)
+        repr_['category'] = CategorySerializer(instance.category).data
+        repr_['images'] = ImageSerializer(instance.productimage_set.first()).data
+
+        # if instance.discount_percent == 0:
+        #     repr_.pop("discount_percent")
 
         if not instance.status:
             repr_.pop("status")
 
         return repr_
+
+
+class ProductListFilterSerializer(serializers.ModelSerializer):
+    total_price = serializers.FloatField(read_only=True)
+    discount_percent = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id",)
+
+    def to_representation(self, instance):
+        repr_ = super().to_representation(instance)
+        repr_['category'] = CategorySerializer(instance.category).data
+        repr_['images'] = ImageSerializer(instance.productimage_set.first()).data
+        repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.all(),many=True).data
+
+
+        # if instance.discount_percent == 0:
+        #     repr_.pop("discount_percent")
+
+        if not instance.status:
+            repr_.pop("status")
+
+        return repr_
+
 
 class NewsletterSubscribeSerializer(serializers.ModelSerializer):
     class Meta:
