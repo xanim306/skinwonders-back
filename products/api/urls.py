@@ -8,6 +8,15 @@ app_name='products-api'
 urlpatterns = [
     path('categories/',views.CategoryView.as_view(),name='category'),
     path('list/',views.ProductListView.as_view(),name='list'),
+    path('list/eyecare/',views.EyeCareListView.as_view(),name='list-eyecare'),
+    path('list/featured/',views.FeaturedListView.as_view(),name='list-featured'),
+    path('list/masks/',views.MasksListView.as_view(),name='list-masks'),
+    path('list/moisturizers/',views.MoisturizersListView.as_view(),name='list-moisturizers'),
+    path('list/nightcare/',views.NightCareListView.as_view(),name='list-nightcare'),
+    path('list/onsale/',views.OnSaleListView.as_view(),name='list-onsale'),
+    path('list/suncare/',views.SunCareListView.as_view(),name='list-suncare'),
+    path('list/treatments/',views.TreatmentsListView.as_view(),name='list-treatments'),
+
     path('news/',views.NewsletterView.as_view(),name='news'),
     path("detail/<int:id>/", views.ProductDetailView.as_view(), name="detail"),
                                             ###Filter###

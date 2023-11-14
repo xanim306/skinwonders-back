@@ -25,9 +25,9 @@ class CategoryView(generics.ListAPIView):
 
 class ProductListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    ordering_fields = ('created_at','name','total_price')
-    filterset_class = ProductFilter
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -47,6 +47,121 @@ class ProductListView(generics.ListAPIView):
     #     serializer.is_valid(raise_exception=True)
     #     serializer.save()
     #     return Response({'message': 'Subscription successful.'}, status=201)
+
+class EyeCareListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Eye Care").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+    
+class FeaturedListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Featured").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+    
+
+class MasksListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Masks").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+    
+
+
+class MoisturizersListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Moisturizers").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+    
+
+
+class NightCareListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Night Care").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+
+
+
+class OnSaleListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="On Sale").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+
+
+
+class SunCareListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Sun Care").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+
+
+class TreatmentsListView(generics.ListAPIView):
+    serializer_class=ProductListSerializer
+    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    # ordering_fields = ('created_at','name','total_price')
+    # filterset_class = ProductFilter
+    # filterset_fields = ['status','skintype']
+
+    pagination_class = CustomPagination
+    queryset = Product.objects.filter(category__name="Treatments").annotate(
+            discount_price = Coalesce('discount',0,output_field = FloatField()),
+            total_price=F("price")-F("discount_price"),discount_percent=F("discount_price")*100/F("price")
+        ).order_by('-created_at')
+
 
 
 class StatusFilterView(generics.ListAPIView):
