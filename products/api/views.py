@@ -25,9 +25,9 @@ class CategoryView(generics.ListAPIView):
 
 class ProductListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -50,9 +50,9 @@ class ProductListView(generics.ListAPIView):
 
 class EyeCareListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -164,222 +164,226 @@ class TreatmentsListView(generics.ListAPIView):
 
 
 
-class StatusFilterView(generics.ListAPIView):
-    serializer_class = ProductListFilterSerializer
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_class = ProductFilter
+# class StatusFilterView(generics.ListAPIView):
+#     serializer_class = ProductListFilterSerializer
+#     # filter_backends = (DjangoFilterBackend,)
+#     # filterset_class = ProductFilter
 
-    def get_queryset(self):
+#     def get_queryset(self):
     
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        status = self.kwargs['status']
+#         status = self.kwargs['status']
 
-        return queryset.filter(status=status)
-
-
+#         return queryset.filter(status=status)
 
 
-class SkinTypeFilterView(generics.ListAPIView):
-    serializer_class = ProductListFilterSerializer
-    # filter_backends = (DjangoFilterBackend,)
-    filterset_class = ProductFilter
-
-    def get_queryset(self):
-
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
-
-        skintype = self.kwargs['skintype']
-
-        return queryset.filter(skintype=skintype)
 
 
-class ProductNameFilterView(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    ordering_fields = ('created_at', 'name', 'total_price')
-    pagination_class = CustomPagination
+# class SkinTypeFilterView(generics.ListAPIView):
+#     serializer_class = ProductListFilterSerializer
+#     filter_backends = (DjangoFilterBackend,)
+#     filterset_class = ProductFilter
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        # Apply name filter
-        name_filter = self.kwargs.get('name', None)
-        if name_filter:
-            queryset = queryset.filter(name__icontains=name_filter)
+#         # skintype = self.kwargs['skintype']
 
-        return queryset
-    
+#         # return queryset.filter(skintype=skintype)
+#         return queryset
 
 
-class ProductPriceFilterView(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    ordering_fields = ('created_at', 'name', 'total_price')
-    # filterset_class = ProductFilter
-    pagination_class = CustomPagination
 
-    def get_queryset(self):
+# class ProductNameFilterView(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     ordering_fields = ('created_at', 'name', 'total_price')
+#     pagination_class = CustomPagination
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#     def get_queryset(self):
 
-        # Apply price filter
-        max_price = self.kwargs.get('max_price', None)
-        min_price = self.kwargs.get('min_price', None)
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        if min_price:
-            queryset=queryset.filter(price__gte=min_price)
-        if max_price:
-            queryset=queryset.filter(price__lte=max_price)
+#         # Apply name filter
+#         name_filter = self.kwargs.get('name', None)
+#         if name_filter:
+#             queryset = queryset.filter(name__icontains=name_filter)
 
-        return queryset
+#         return queryset
     
 
-class PriceAscendingFilter(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    ordering_fields = ('created_at', 'name', 'total_price')
-    # filterset_class = ProductFilter
-    pagination_class = CustomPagination
 
-    def get_queryset(self):
+# class ProductPriceFilterView(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     ordering_fields = ('created_at', 'name', 'total_price')
+#     # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#     def get_queryset(self):
 
-        # Apply price filter
-        queryset=queryset.order_by("total_price")
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
+
+#         # Apply price filter
+#         max_price = self.kwargs.get('max_price', None)
+#         min_price = self.kwargs.get('min_price', None)
+
+#         if min_price:
+#             queryset=queryset.filter(price__gte=min_price)
+#         if max_price:
+#             queryset=queryset.filter(price__lte=max_price)
+
+#         return queryset
+    
+
+# class PriceAscendingFilter(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     ordering_fields = ('created_at', 'name', 'total_price')
+#     # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
+
+#     def get_queryset(self):
+
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
+
+#         # Apply price filter
+#         queryset=queryset.order_by("total_price")
         
-        return queryset
+#         return queryset
 
 
-class PriceDescendingFilter(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    # ordering_fields = ('created_at', 'name', 'total_price')
-    # # filterset_class = ProductFilter
-    pagination_class = CustomPagination
+# class PriceDescendingFilter(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     # ordering_fields = ('created_at', 'name', 'total_price')
+#     # # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        # Apply price filter
-        queryset=queryset.order_by("-total_price")
+#         # Apply price filter
+#         queryset=queryset.order_by("-total_price")
         
-        return queryset
+#         return queryset
 
 
-class NameAscendingFilter(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    # ordering_fields = ('created_at', 'name', 'total_price')
-    # filterset_class = ProductFilter
-    pagination_class = CustomPagination
+# class NameAscendingFilter(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     # ordering_fields = ('created_at', 'name', 'total_price')
+#     # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        # Apply price filter
-        queryset=queryset.order_by("name")
+#         # Apply price filter
+#         queryset=queryset.order_by("name")
         
-        return queryset
+#         return queryset
 
 
 
 
-class NameDescendingFilter(generics.ListAPIView):
-    serializer_class= ProductListSerializer
-    # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    # ordering_fields = ('created_at', 'name', 'total_price')
-    # filterset_class = ProductFilter
-    pagination_class = CustomPagination
+# class NameDescendingFilter(generics.ListAPIView):
+#     serializer_class= ProductListSerializer
+#     # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     # ordering_fields = ('created_at', 'name', 'total_price')
+#     # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        # Apply price filter
-        queryset=queryset.order_by("-name")
+#         # Apply price filter
+#         queryset=queryset.order_by("-name")
         
-        return queryset
+#         return queryset
 
 
 
 
-class CreatedAscendingFilter(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    # ordering_fields = ('created_at', 'name', 'total_price')
-    # filterset_class = ProductFilter
-    pagination_class = CustomPagination
+# class CreatedAscendingFilter(generics.ListAPIView):
+#     serializer_class = ProductListSerializer
+#     # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+#     # ordering_fields = ('created_at', 'name', 'total_price')
+#     # filterset_class = ProductFilter
+#     pagination_class = CustomPagination
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+#         queryset = Product.objects.annotate(
+#             discount_price=Coalesce('discount', 0, output_field=FloatField()),
+#             total_price=F("price") - F("discount_price"),
+#             discount_percent=F("discount_price") * 100 / F("price")
+#         ).order_by('-created_at')
 
-        # Apply price filter
-        queryset=queryset.order_by("created_at")
+#         # Apply price filter
+#         queryset=queryset.order_by("created_at")
         
-        return queryset
+#         return queryset
 
 
-class CreatedDescendingFilter(generics.ListAPIView):
-    serializer_class = ProductListSerializer
-    # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    # ordering_fields = ('created_at', 'name', 'total_price')
-    # # filterset_class = ProductFilter
-    pagination_class = CustomPagination
+# class CreatedDescendingFilter(generics.ListAPIView):
+    # serializer_class = ProductListSerializer
+    # # filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    # # ordering_fields = ('created_at', 'name', 'total_price')
+    # # # filterset_class = ProductFilter
+    # pagination_class = CustomPagination
 
-    def get_queryset(self):
+    # def get_queryset(self):
 
-        queryset = Product.objects.annotate(
-            discount_price=Coalesce('discount', 0, output_field=FloatField()),
-            total_price=F("price") - F("discount_price"),
-            discount_percent=F("discount_price") * 100 / F("price")
-        ).order_by('-created_at')
+    #     queryset = Product.objects.annotate(
+    #         discount_price=Coalesce('discount', 0, output_field=FloatField()),
+    #         total_price=F("price") - F("discount_price"),
+    #         discount_percent=F("discount_price") * 100 / F("price")
+    #     ).order_by('-created_at')
 
-        # Apply price filter
-        queryset=queryset.order_by("-created_at")
+    #     # Apply price filter
+    #     queryset=queryset.order_by("-created_at")
         
-        return queryset
+    #     return queryset
+    
+
 
 class NewsletterView(generics.CreateAPIView):
     serializer_class= NewsletterSubscribeSerializer
