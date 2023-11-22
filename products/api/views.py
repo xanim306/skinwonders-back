@@ -63,9 +63,9 @@ class EyeCareListView(generics.ListAPIView):
     
 class FeaturedListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -77,9 +77,9 @@ class FeaturedListView(generics.ListAPIView):
 
 class MasksListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -92,9 +92,9 @@ class MasksListView(generics.ListAPIView):
 
 class MoisturizersListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -107,9 +107,9 @@ class MoisturizersListView(generics.ListAPIView):
 
 class NightCareListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -122,9 +122,9 @@ class NightCareListView(generics.ListAPIView):
 
 class OnSaleListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -137,9 +137,9 @@ class OnSaleListView(generics.ListAPIView):
 
 class SunCareListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
@@ -151,9 +151,9 @@ class SunCareListView(generics.ListAPIView):
 
 class TreatmentsListView(generics.ListAPIView):
     serializer_class=ProductListSerializer
-    # filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
-    # ordering_fields = ('created_at','name','total_price')
-    # filterset_class = ProductFilter
+    filter_backends=(DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('created_at','name','total_price')
+    filterset_class = ProductFilter
     # filterset_fields = ['status','skintype']
 
     pagination_class = CustomPagination
