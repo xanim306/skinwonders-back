@@ -146,7 +146,7 @@ class RelatedProductSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     total_price = serializers.FloatField(read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
-    related_products = RelatedProductSerializer(many=True, read_only=True)  # Use the RelatedProductSerializer here
+    related_products = RelatedProductSerializer(many=True, read_only=True)  
 
     # wishlist = UserSerializer(many=True)
 
