@@ -50,6 +50,7 @@ class SkinTypeSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     total_price = serializers.FloatField(read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
+    # skintype = SkinTypeSerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -59,6 +60,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         repr_ = super().to_representation(instance)
         repr_['category'] = CategorySerializer(instance.category).data
         repr_['images'] = ImageSerializer(instance.productimage_set.first()).data
+        repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.first()).data
 
         # if instance.discount_percent == 0:
         #     repr_.pop("discount_percent")
@@ -159,6 +161,8 @@ class ProductSerializer(serializers.ModelSerializer):
         repr_= super().to_representation(instance)
         repr_['category']=CategorySerializer(instance.category).data
         repr_['images']=ImageSerializer(instance.productimage_set.all(),many=True).data
+        repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.first()).data
+
 
         if not instance.status:
             repr_.pop("status")
