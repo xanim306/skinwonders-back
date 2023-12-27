@@ -112,12 +112,12 @@ class ProductImage(DateMixin):
 
 
 
-class SkinType(DateMixin):
-    skin = models.CharField(max_length=300,blank=True,null=True)
-    product = models.ManyToManyField(Product,blank=True)
+# class SkinType(DateMixin):
+#     skin = models.CharField(max_length=300,blank=True,null=True)
+#     product = models.ManyToManyField(Product,blank=True)
 
-    def __str__(self):
-        return self.skin
+#     def __str__(self):
+#         return self.skin
 
 
 

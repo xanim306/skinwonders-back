@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from ..models import Category,Product,ProductImage,SkinType,Newsletter,Basket,Order,OrderItem,ShippingInfo,BillingInfo,PaymentInfo,Wishlist,ProductComment
+from ..models import Category,Product,ProductImage,Newsletter,Basket,Order,OrderItem,ShippingInfo,BillingInfo,PaymentInfo,Wishlist,ProductComment
 from django.contrib.auth import get_user_model
 from django.db.models import F, FloatField,Value
 from django.db.models.functions import Coalesce
@@ -41,21 +41,21 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 
-class SkinTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SkinType
-        fields = ("skin",)
+# class SkinTypeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SkinType
+#         fields = ("skin",)
 
 
 class ProductListSerializer(serializers.ModelSerializer):
     total_price = serializers.FloatField(read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
-    skintype = serializers.SerializerMethodField()
+    # skintype = serializers.SerializerMethodField()
     # skintype = SkinTypeSerializer(read_only=True)
 
     class Meta:
         model = Product
-        fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id","skintype")
+        fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id",)
 
     def to_representation(self, instance):
         repr_ = super().to_representation(instance)
@@ -66,39 +66,39 @@ class ProductListSerializer(serializers.ModelSerializer):
         # if instance.discount_percent == 0:
         #     repr_.pop("discount_percent")
 
-        if not instance.status:
-            repr_.pop("status")
+        # if not instance.status:
+        #     repr_.pop("status")
 
         return repr_
     
-    def get_skintype(self, instance):
-        skintype_obj = instance.skintype_set.first()
-        return skintype_obj.skin
+    # def get_skintype(self, instance):
+    #     skintype_obj = instance.skintype_set.first()
+    #     return skintype_obj.skin
 
 
 
-class ProductListFilterSerializer(serializers.ModelSerializer):
-    total_price = serializers.FloatField(read_only=True)
-    discount_percent = serializers.IntegerField(read_only=True)
+# class ProductListFilterSerializer(serializers.ModelSerializer):
+#     total_price = serializers.FloatField(read_only=True)
+#     discount_percent = serializers.IntegerField(read_only=True)
 
-    class Meta:
-        model = Product
-        fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id",)
+#     class Meta:
+#         model = Product
+#         fields = ("name", "price", "total_price", "discount_percent", "category", "status", "id",)
 
-    def to_representation(self, instance):
-        repr_ = super().to_representation(instance)
-        repr_['category'] = CategorySerializer(instance.category).data
-        repr_['images'] = ImageSerializer(instance.productimage_set.first()).data
-        # repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.all(),many=True).data
+#     def to_representation(self, instance):
+#         repr_ = super().to_representation(instance)
+#         repr_['category'] = CategorySerializer(instance.category).data
+#         repr_['images'] = ImageSerializer(instance.productimage_set.first()).data
+#         # repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.all(),many=True).data
 
 
-        # if instance.discount_percent == 0:
-        #     repr_.pop("discount_percent")
+#         # if instance.discount_percent == 0:
+#         #     repr_.pop("discount_percent")
 
-        if not instance.status:
-            repr_.pop("status")
+#         if not instance.status:
+#             repr_.pop("status")
 
-        return repr_
+#         return repr_
     
 
 
@@ -168,7 +168,7 @@ class ProductSerializer(serializers.ModelSerializer):
         repr_= super().to_representation(instance)
         repr_['category']=CategorySerializer(instance.category).data
         repr_['images']=ImageSerializer(instance.productimage_set.all(),many=True).data
-        repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.first()).data
+        # repr_['skintype'] = SkinTypeSerializer(instance.skintype_set.first()).data
 
 
         if not instance.status:

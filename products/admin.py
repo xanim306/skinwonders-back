@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Category,Product,ProductImage,SkinType,Newsletter,OrderItem,Order,Basket,ShippingInfo,BillingInfo,PaymentInfo,Wishlist
+from .models import Category,Product,ProductImage,Newsletter,OrderItem,Order,Basket,ShippingInfo,BillingInfo,PaymentInfo,Wishlist
 
 
 
@@ -14,14 +14,16 @@ class  ImageInline(admin.TabularInline):
     extra = 1
 
 
-class SkinTypeInline(admin.TabularInline):
-    model = SkinType.product.through  # many to many -de inline bele istifade olunur
-    extra = 0
+# class SkinTypeInline(admin.TabularInline):
+#     model = SkinType.product.through  # many to many -de inline bele istifade olunur
+#     extra = 0
 
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("name","id")
-    inlines=[ImageInline,SkinTypeInline]
+    inlines=[ImageInline]
+    # inlines=[ImageInline,SkinTypeInline]
+
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product,ProductAdmin)
@@ -36,4 +38,4 @@ admin.site.register(PaymentInfo)
 
 
 admin.site.register(Wishlist)
-admin.site.register(SkinType)
+# admin.site.register(SkinType)
